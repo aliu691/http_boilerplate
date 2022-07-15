@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_http_boilerplate/helpers/environment.dart';
+import 'package:my_http_boilerplate/service/base_api_client.dart';
 
 void main() async {
   await dotenv.load(fileName: Environment.fileName);
@@ -34,6 +35,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  BaseApiCall client = BaseApiCall();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +48,9 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                client.getRequest("posts");
+              },
               child: const Text('Get'),
             ),
             const SizedBox(
