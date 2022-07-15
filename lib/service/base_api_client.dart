@@ -4,21 +4,19 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:my_http_boilerplate/helpers/app_exceptions.dart';
-import 'package:my_http_boilerplate/helpers/environment.dart';
+import 'package:my_http_boilerplate/helpers/toast_manager.dart';
 
 class BaseApiCall {
-  final baseUrl = Environment.apiBaseUrl.toString();
-  static const TIME_FOR_REQUEST = 20;
+  static const timeforrequest = 5;
 
-  Future<dynamic> getRequest(String endpoint) async {
+  Future<dynamic> getRequest(String baseUrl, String endpoint) async {
     final uri = baseUrl + endpoint;
 
     try {
       final response = await http
           .get(Uri.parse(uri))
-          .timeout(const Duration(seconds: TIME_FOR_REQUEST));
+          .timeout(const Duration(seconds: timeforrequest));
       final data = _processResponse(response);
-      print(data);
       return data;
     } on TimeoutException {
       throw ApiTimeoutException(
@@ -29,7 +27,8 @@ class BaseApiCall {
     }
   }
 
-  Future<dynamic> postRequest(String endpoint, dynamic payload) async {
+  Future<dynamic> postRequest(
+      String baseUrl, String endpoint, dynamic payload) async {
     final uri = baseUrl + endpoint;
 
     final body = jsonEncode(payload);
@@ -37,9 +36,8 @@ class BaseApiCall {
     try {
       final response = await http
           .post(Uri.parse(uri), body: body)
-          .timeout(const Duration(seconds: TIME_FOR_REQUEST));
+          .timeout(const Duration(seconds: timeforrequest));
       final data = _processResponse(response);
-      print(data);
       return data;
     } on TimeoutException {
       throw ApiTimeoutException(
@@ -53,10 +51,13 @@ class BaseApiCall {
   _processResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:
+        ToastManager.showSuccessToast("success");
         final data = jsonDecode(response.body);
         return data;
 
       case 201:
+        ToastManager.showSuccessToast("success");
+
         final data = jsonDecode(response.body);
         return data;
 
